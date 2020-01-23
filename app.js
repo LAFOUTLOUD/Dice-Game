@@ -85,16 +85,29 @@ document.querySelector('.btn-roll').addEventListener('click', function() {
 					// makes the value of the roundScore resets back to 0
 					roundScore = 0;
 
+					// removes the "active" part of the class "player-0-panel"
+					document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+
 					// the value of the activePlayer variable becomes 1 (aka Player 2)
 					activePlayer = 1;
-
+				
+					// adds the "active" part of to class "player-1-panel"
+					document.querySelector('.player-' + activePlayer + '-panel').classList.add('active');
 			}
 		
 			// if the current active player is Player 2
-			else if (activePlayer === 1) { 
+			else if (activePlayer === 1) {
+				
+				// changes the text for "current" for the active player to 0
 				document.querySelector('#current-' + activePlayer).textContent = '0';
+
 				roundScore = 0;
+				
+				document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+				
 				activePlayer = 0;
+				
+				document.querySelector('.player-' + activePlayer + '-panel').classList.add('active');
 			}
 	}
 
