@@ -1,114 +1,145 @@
-// both players scores are going into 1 variable, so we put them into an array
-var scores = [0,0];
-var roundScore = 0;
+// we declare variables that we will define later
+var scores, roundScores, activePlayer, gamePlaying;
 
-// because both player scores are going into an array, active player 1 = 0, active player 2 = 1
-// by default, we want the first player to be active player [0].
-var activePlayer = 0;
+// at the start of the game, the newGame() function is called, resetting everthing
+newGame();
 
-// we select the element holding the score for both players w/ the class name "current-0" or "current-1"
-// we change its text w/ the .textContent = ''; property, to be equal to the value of the dice variable.
-// we use a variable to determine who the active player is.
-// when the active player is active player 1, their value changes to 0,
-// this is combined w/ the text "current-", so that when active player = 1, current-1,
-// because 2 elements share the class name "current-", we use type coercion to combine it w/ the value of active player
-// document.querySelector('#current-' + activePlayer).textContent = dice;
+// creates an EVENT LISTENER for the ROLL DICE button, when clicked, an ANONYMOUS FUNCTION is executed
+document.querySelector('.btn-roll').addEventListener('click', function () {
+	
+	if (gamePlaying) {
 
-// the game starts w/ the dice image hidden
-document.querySelector('.dice').style.display = 'none';
-
-// when the game starts, all values start at 0
-document.getElementById('score-0').textContent = '0';
-document.getElementById('score-1').textContent = '0';
-document.getElementById('current-0').textContent = '0';
-document.getElementById('current-1').textContent = '0';
-
-// we select the button through its class "btn-roll", attach an Event Listener to it.
-// when the button is 'clicked' (EL is called), the function is called
-document.querySelector('.btn-roll').addEventListener('click', function() {
-
-	// 
-	// creates a new variable called 'dice', its value is a random whole number multiplied by 6 and adding 1
+	// 1. creates a variable called 'dice'
+	// 2. the value of the dice variable is the outcome of a method
+	// 3. the method generates a random #, multiplies it by 6, another method rounds it down to a whole #, adds 1
 	var dice = Math.floor( Math.random() * 6 ) + 1;
 	
-	// display the result
-
-	// 1. the dice image becomes visible again when clicked
-	document.querySelector('.dice').style.display = 'block';
-
-	// 2. we match the dice image with the value of the dice variable
-	// we use the HTML DOM Image src property to change the image
-	// like above, multiple files share the same name
-	// so we use type coercion to match the image w/ the dice value
-	// we change the name of the image src to be, "dice- + whatever the value of the dice variable is"
-	// when the die lands on 3, dice- + dice, becomes dice-"3".
-	// .src = '';
-	// inside the property, we put the name of the src: 'dice-1.png'
-	// using TYPE COERCION, we create a string that will change based on the value of the dice variable
-	// instead of (dice-1.png) => ('dice-' + dice + '.png')
-	// when dice = 1 => 'dice-' + dice + '.png' = 'dice-1'
-	// when dice = 2 => 'dice-' + dice + '.png' = 'dice-2'
-	// we add a variable that changes into the string, when the variable changes, it changes that part of the string.
-	document.querySelector('.dice').src = 'dice-' + dice + '.png';
+	// to avoid repeating document.querySelector('.dice'), we put the code into a variable
+	var diceDOM = document.querySelector('.dice');
 	
-	// 3. display the result
-	// JS reads right-to-left. current roundScore + dice is evaluated first, then added to the roundScore, manipulating it.
-	// activePlayer will = 0 or 1. 
-	// thanks to 'current-' + activePlayer = current-(value of activePlayer)
-	// the roundScore in JS will change, BUT we have to tell JS to change the text in the HTML
-	if (dice > 1) { 
-					// JS assigns values from right to left
-					// the new value of the roundScore = the current roundScore + value of the dice variable
-					// roundScore(10) = roundScore(7) + dice(3);
-					roundScore = roundScore + dice;
+	// 4. stops hiding the dice image
+	diceDOM.style.display = 'block';
+	
+	// 5. the dice image displayed matches the current value of the dice var
+	diceDOM.src = 'dice-' + dice + '.png';
+	
+	// 6. the text in the current box, for the active player, matches the value of the dice var
+	document.querySelector('#current-' + activePlayer).textContent = dice;
+
+	// if the value of the dice var is strict DIFFERENT
+	if ( dice !== 1 ) {
 		
-					// we tell the DOM to change the text of the HTML ELEMENT w/ the id attribute name 'current-' to be the value of the roundScore
-					// roundScore = 10; => <div id="current-0">10</div>
-					// roundScore = 45; => <div id="current-1">45</div>
-					document.querySelector('#current-' + activePlayer).textContent = roundScore; 
+		// the new current score is = to the old current score + the value of the dice var
+		roundScore += dice;
+		
+		// changes the text for the current box to match the round score
+		document.querySelector('#current-' + activePlayer).textContent = roundScore;
+	}  
 	
+	// the player rolls a 1
+	else {
+		
+		// switches to the next player
+		nextPlayer();
 	}
 	
-	// if the value of dice is NOT GREATER THAN 1
-	else { 
-			
-			// if the current active player is Player 1
-			if (activePlayer === 0) {
-
-					// the text of the current activePlayer becomes 0
-					// the order of code DOES MATTER WITHIN the SCOPE CHAIN
-					// the text is changed first
-					// THEN the activePlayer is changed
-					// w/o changing the text, the player will switch, the roundScore will reset, but the text won't display the reset
-					document.querySelector('#current-' + activePlayer).textContent = '0';
-				
-					// makes the value of the roundScore resets back to 0
-					roundScore = 0;
-
-					// removes the "active" part of the class "player-0-panel"
-					document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
-
-					// the value of the activePlayer variable becomes 1 (aka Player 2)
-					activePlayer = 1;
-				
-					// adds the "active" part of to class "player-1-panel"
-					document.querySelector('.player-' + activePlayer + '-panel').classList.add('active');
-			}
-		
-			// if the current active player is Player 2
-			else if (activePlayer === 1) {
-				
-				// changes the text for "current" for the active player to 0
-				document.querySelector('#current-' + activePlayer).textContent = '0';
-
-				roundScore = 0;
-				
-				document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
-				
-				activePlayer = 0;
-				
-				document.querySelector('.player-' + activePlayer + '-panel').classList.add('active');
-			}
 	}
-
 });
+
+// creates an EVENT LISTENER for the HOLD button, when clicked, an ANONYMOUS FUNCTION is executed
+document.querySelector('.btn-hold').addEventListener('click', function () {
+
+	if (gamePlaying) {
+		
+		// 1. change the current score (roundScore) to global score (scores[])
+		scores[activePlayer] += roundScore;
+	
+		// update the UI
+		document.getElementById('score-' + activePlayer).textContent = scores[activePlayer];
+	
+		// check if player won the game (instea dof repeating the code from above, use a function)
+		if (scores[activePlayer] >= 10) {
+			
+			document.getElementById('name-' + activePlayer).textContent = 'Winner!';
+			document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
+			document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+
+			// hides the dice image
+			document.querySelector('.dice').style.display = 'none';
+			
+			gamePlaying = false;
+
+		}
+
+		else {	
+			
+			// switches to the next player
+			nextPlayer();
+
+		}
+	}
+});
+
+// creates an EVENT LISTENER for the NEW GAME button, when clicked, an ANONYMOUS FUNCTION is executed
+document.querySelector('.btn-new').addEventListener('click', newGame);
+
+// to avoid repeating ourselves, we put this block of code into a CALLBACK function for our EL to call
+function nextPlayer() {
+	
+	// use a ternarty operator: if activePlayer = 0, then activeplayer becomes 1, else activePlayer becomes 0
+	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
+	roundScore = 0;
+	
+	// then the text is reset back to 0
+	document.getElementById('current-0').textContent = '0';
+	document.getElementById('current-1').textContent = '0';
+		
+	// the player holding the 'active' class toggles (if added, its removed. if removed, its added.)
+	document.querySelector('.player-0-panel').classList.toggle('active');
+	document.querySelector('.player-1-panel').classList.toggle('active');
+	
+	// hides the dice image
+	document.querySelector('.dice').style.display = 'none';
+
+};
+
+// resets the game back to the start
+	function newGame() {
+
+		// variable for the roundScore the player HOLDs. player 1 will be scores[0], player 2 will be scores[1]
+		scores = [0,0];
+
+		// variable that holds the current value for each player's round score
+		roundScore = 0;
+
+		// variable that decides the active player
+		activePlayer = 0;
+
+		// resets the player names back to their original text
+		document.getElementById('name-0').textContent = 'Player 1';
+		document.getElementById('name-1').textContent = 'Player 2';
+
+		// 2. adds inline css to the dice, and hides it at the start of the game.
+		document.querySelector('.dice').style.display = 'none';
+
+		// when the game starts, all values start at 0
+		document.getElementById('score-0').textContent = '0';
+		document.getElementById('score-1').textContent = '0';
+		document.getElementById('current-0').textContent = '0';
+		document.getElementById('current-1').textContent = '0';
+
+		// player 1 becomes the active player again. active class is removed from player 2.
+		// document.querySelector('.player-0-panel').classList.add('active');
+		// document.querySelector('.player-1-panel').classList.remove('active');
+		
+		// removes the winner class from player 1 and 2
+		document.querySelector('.player-0-panel').classList.remove('winner');
+		document.querySelector('.player-1-panel').classList.remove('winner');
+		
+		// player 1 becomes the active player again. active class is removed from player 2.
+		document.querySelector('.player-1-panel').classList.remove('active');
+		document.querySelector('.player-0-panel').classList.add('active');
+		
+		gamePlaying = true;
+
+	};
