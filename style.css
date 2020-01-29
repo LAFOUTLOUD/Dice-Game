@@ -1,6 +1,4 @@
-/**********************************************
-*** GENERAL
-**********************************************/
+// GENERAL
 
 * {
     margin: 0;
@@ -45,11 +43,7 @@ body {
     padding: 100px;
 }
 
-
-
-/**********************************************
-*** PLAYERS
-**********************************************/
+//PLAYERS
 
 .player-name {
     font-size: 40px;
@@ -144,7 +138,7 @@ i {
 .dice {
     position: absolute;
     left: 50%;
-    top: 178px;
+    top: 180px;
     transform: translateX(-50%);
     height: 100px;
     box-shadow: 0px 10px 60px rgba(0, 0, 0, 0.10);
@@ -152,3 +146,27 @@ i {
 
 .winner { background-color: #f7f7f7; }
 .winner .player-name { font-weight: 300; color: #EB4D4D; }
+
+//Rule 2: Adds an input field to the HTML where players can change the winning score
+#winning_score {
+	position:absolute;
+	top:27%;
+	left:40.8%;
+}
+
+#winning_score_button {
+	color:#EB4D4D;
+	position:absolute;
+	top:22%;
+	left:49.9%;
+}
+
+// Rule 3: Create a 2nd pair of dice
+.dice_2 {
+    position: absolute;
+    left: 50%;
+    top: 290px;
+    transform: translateX(-50%);
+    height: 100px;
+    box-shadow: 0px 10px 60px rgba(0, 0, 0, 0.10);
+}
