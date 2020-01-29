@@ -1,145 +1,210 @@
-// we declare variables that we will define later
-var scores, roundScores, activePlayer, gamePlaying;
+// the 3 most important variables are created
+var playerScores, currentScore, currentPlayer, six, winningScore, gameState;
 
-// at the start of the game, the newGame() function is called, resetting everthing
+// the newGame() function is called when the application loads
 newGame();
 
-// creates an EVENT LISTENER for the ROLL DICE button, when clicked, an ANONYMOUS FUNCTION is executed
-document.querySelector('.btn-roll').addEventListener('click', function () {
-	
-	if (gamePlaying) {
+// adds functionality to the ROLL DICE button // when the ROLL DICE button is CLICKED
+document.querySelector('.btn-roll').addEventListener('click', function() {
 
-	// 1. creates a variable called 'dice'
-	// 2. the value of the dice variable is the outcome of a method
-	// 3. the method generates a random #, multiplies it by 6, another method rounds it down to a whole #, adds 1
-	var dice = Math.floor( Math.random() * 6 ) + 1;
-	
-	// to avoid repeating document.querySelector('.dice'), we put the code into a variable
-	var diceDOM = document.querySelector('.dice');
-	
-	// 4. stops hiding the dice image
-	diceDOM.style.display = 'block';
-	
-	// 5. the dice image displayed matches the current value of the dice var
-	diceDOM.src = 'dice-' + dice + '.png';
-	
-	// 6. the text in the current box, for the active player, matches the value of the dice var
-	document.querySelector('#current-' + activePlayer).textContent = dice;
+	if (gameState) {
 
-	// if the value of the dice var is strict DIFFERENT
-	if ( dice !== 1 ) {
+		// stops hiding the dice image
+		document.querySelector('.dice').style.display = 'block';
 		
-		// the new current score is = to the old current score + the value of the dice var
-		roundScore += dice;
+		// stops hiding the 2nd dice image
+		document.querySelector('.dice_2').style.display = 'block';
 		
-		// changes the text for the current box to match the round score
-		document.querySelector('#current-' + activePlayer).textContent = roundScore;
-	}  
+		// creates the 'dice' variable // generates a random number, adds its value to the dice variable
+		var dice = Math.floor( Math.random() * 6 ) + 1;
+		
+		// creates a 2nd dice variable that ALSO generates a random number
+		var dice2 = Math.floor( Math.random() * 6 ) + 1;
+		
+		// matches the dice image and the text of the current player to be equal to the value of the dice variable
+		document.querySelector('.dice').src = 'dice-' + dice + '.png';
+		document.getElementById('current-' + currentPlayer).textContent = dice;
+		
+		// matches the 2nd dice image to the dice2 variable
+		document.querySelector('.dice_2').src = 'dice-' + dice2 + '.png';
+
+		// IF the currentPlayer DOES NOT roll a 1, run the following code:
+		if (dice != 1 && dice2 != 1 ) {
+		
+			// the NEW current score BECOMES equal to the OLD value of the current score + the value of the dice
+			currentScore = currentScore + dice;
+		
+			// the TEXT of CURRENT is changed to match the current score
+			document.getElementById('current-' + currentPlayer).textContent = currentScore;
+			
+			// IF the current player ROLLS A '6'
+			if (dice === 6) {
+
+				// the NEW value of the six variable BECOMES the CURRENT value of the six variable + 1
+				six = six + 1;
+
+				// the current player rolls 2 6's in a row (the value of the six var was '1' and increases by 1 again)
+				if (six === 2) {
+				
+					// changes the player score to 0
+					document.getElementById('score-' + currentPlayer).textContent = '0';
+					document.getElementById('current-' + currentPlayer).textContent = '0';
+					
+					// the current player's player score AND current score become 0
+					nextPlayer()
+				}
+			}
+			
+			else {
+				
+				// else the value of the six variable becomes 0 again
+				six = 0;
+
+			};
+
+		}
 	
-	// the player rolls a 1
-	else {
+		// if the current player DOES roll a 1
+		else {
 		
-		// switches to the next player
-		nextPlayer();
-	}
-	
-	}
+			// a function is created to avoid repeating code
+			nextPlayer()
+
+		};
+	};
 });
 
-// creates an EVENT LISTENER for the HOLD button, when clicked, an ANONYMOUS FUNCTION is executed
-document.querySelector('.btn-hold').addEventListener('click', function () {
+// adds functionality to the HOLD button
+document.querySelector('.btn-hold').addEventListener('click', function() {
+	
+	if (gameState) {
 
-	if (gamePlaying) {
+		// sets the player score for the current player BY adding the current score to the player scores
+		playerScores[currentPlayer] = playerScores[currentPlayer] + currentScore;
+	
+		// changes the TEXT of the playerScore to match the current player score
+		document.getElementById('score-' + currentPlayer).textContent = playerScores[currentPlayer];
+	
+		// resets the VALUE of currentScore back to 0
+		currentScore = 0;
+
+		// changes the TEXT of the current player to 0
+		document.getElementById('current-' + currentPlayer).textContent = '0';
+
+		// Hides the dice image
+		document.querySelector('.dice').style.display = 'none';
+
+		// determines the player score needed to be declared the winner
+		if (playerScores[currentPlayer] >= winningScore) {
+
+			// changes the text to Winner!
+			document.getElementById('name-' + currentPlayer).textContent = 'Winner!';
+
+			// adds the winner class to the player panel of the current player
+			document.querySelector('.player-' + currentPlayer + '-panel').classList.add('winner');
+			
+			// sets the value of the input field at the end of the game to '0'
+			document.getElementById('rule_3').value = '0';
 		
-		// 1. change the current score (roundScore) to global score (scores[])
-		scores[activePlayer] += roundScore;
-	
-		// update the UI
-		document.getElementById('score-' + activePlayer).textContent = scores[activePlayer];
-	
-		// check if player won the game (instea dof repeating the code from above, use a function)
-		if (scores[activePlayer] >= 10) {
-			
-			document.getElementById('name-' + activePlayer).textContent = 'Winner!';
-			document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
-			document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
-
-			// hides the dice image
-			document.querySelector('.dice').style.display = 'none';
-			
-			gamePlaying = false;
+			// makes the GAME STATE false
+			gameState = false;
 
 		}
 
-		else {	
-			
-			// switches to the next player
-			nextPlayer();
+		else {
+		
+			// a function is created to avoid repeating code
+			nextPlayer()
 
 		}
 	}
 });
 
-// creates an EVENT LISTENER for the NEW GAME button, when clicked, an ANONYMOUS FUNCTION is executed
-document.querySelector('.btn-new').addEventListener('click', newGame);
-
-// to avoid repeating ourselves, we put this block of code into a CALLBACK function for our EL to call
+// controls what happens when the player switches to the NEXT PLAYER 
 function nextPlayer() {
-	
-	// use a ternarty operator: if activePlayer = 0, then activeplayer becomes 1, else activePlayer becomes 0
-	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
-	roundScore = 0;
-	
-	// then the text is reset back to 0
-	document.getElementById('current-0').textContent = '0';
-	document.getElementById('current-1').textContent = '0';
+
+	// resets the VALUE of currentScore back to 0
+	currentScore = 0;
+
+	// changes the TEXT of the current player to 0
+	document.getElementById('current-' + currentPlayer).textContent = '0';
 		
-	// the player holding the 'active' class toggles (if added, its removed. if removed, its added.)
+	// if the current player rolls a 1, the current player switches to the NEXT PLAYER
+	currentPlayer === 0 ? currentPlayer = 1 : currentPlayer = 0
+
+	// toggles the highlighted side of the panel. // if 'active', becomes 'inactive'.
 	document.querySelector('.player-0-panel').classList.toggle('active');
 	document.querySelector('.player-1-panel').classList.toggle('active');
-	
-	// hides the dice image
+
+	// Hides the dice image
 	document.querySelector('.dice').style.display = 'none';
+	
+	// Hides the 2nd dice image
+	document.querySelector('.dice_2').style.display = 'none';
+	
+	// the value of the six var becomes '0'
+	six = 0;
 
 };
 
-// resets the game back to the start
-	function newGame() {
+// adds functionality to the SUBMIT button and INPUT FIELD
+document.querySelector('.btn-submit').addEventListener('click', function () {
 
-		// variable for the roundScore the player HOLDs. player 1 will be scores[0], player 2 will be scores[1]
-		scores = [0,0];
-
-		// variable that holds the current value for each player's round score
-		roundScore = 0;
-
-		// variable that decides the active player
-		activePlayer = 0;
-
-		// resets the player names back to their original text
-		document.getElementById('name-0').textContent = 'Player 1';
-		document.getElementById('name-1').textContent = 'Player 2';
-
-		// 2. adds inline css to the dice, and hides it at the start of the game.
-		document.querySelector('.dice').style.display = 'none';
-
-		// when the game starts, all values start at 0
-		document.getElementById('score-0').textContent = '0';
-		document.getElementById('score-1').textContent = '0';
-		document.getElementById('current-0').textContent = '0';
-		document.getElementById('current-1').textContent = '0';
-
-		// player 1 becomes the active player again. active class is removed from player 2.
-		// document.querySelector('.player-0-panel').classList.add('active');
-		// document.querySelector('.player-1-panel').classList.remove('active');
+	// the submit button only works when the state variable is set to true
+	if (gameState) {
+	
+		// adds an event listener to the submit button for the new input field
+		// the value of the winingScore = is the value of the element w/ id of rule_3
+		winningScore = document.getElementById('rule_3').value;
 		
-		// removes the winner class from player 1 and 2
-		document.querySelector('.player-0-panel').classList.remove('winner');
-		document.querySelector('.player-1-panel').classList.remove('winner');
-		
-		// player 1 becomes the active player again. active class is removed from player 2.
-		document.querySelector('.player-1-panel').classList.remove('active');
-		document.querySelector('.player-0-panel').classList.add('active');
-		
-		gamePlaying = true;
+	}
+});
 
-	};
+
+
+// adds functionality to the NEW GAME button // the ANONYMOUS function newGame is made part of the EVENT LISTENER
+document.querySelector('.btn-new').addEventListener('click', newGame);
+
+function newGame() {
+
+	// mutates the value of the playerScores, currentScore and currentPlayer variables back to '0'
+	playerScores = [0,0];
+	currentScore = 0;
+	currentPlayer = 0;
+
+	// Changes all of the text to '0'
+	document.getElementById('score-0').textContent = '0';
+	document.getElementById('score-1').textContent = '0';
+	document.getElementById('current-0').textContent = '0';
+	document.getElementById('current-1').textContent = '0';
+
+	// Hides the dice image
+	document.querySelector('.dice').style.display = 'none';
+	
+	// Hides the 2nd dice image
+	document.querySelector('.dice_2').style.display = 'none';
+	
+	// resets the player NAMES back to their original text
+	document.getElementById('name-0').textContent = 'Player 1';
+	document.getElementById('name-1').textContent = 'Player 2';
+	
+	// removes the WINNER class from both players
+	document.querySelector('.player-0-panel').classList.remove('winner');
+	document.querySelector('.player-1-panel').classList.remove('winner');
+	
+	// removes the ACTIVE class from the SECOND PLAYER and adds it back to the FIRST PLAYER
+	document.querySelector('.player-0-panel').classList.add('active');
+	document.querySelector('.player-1-panel').classList.remove('active');
+
+	// the value of the six var starts at '0'
+	six = 0;
+
+	// sts the state variable to true, allowing the game to play
+	gameState = true;
+	
+	// sets the winningScore at the start of the game to '100'
+	winningScore = 100;
+	
+	// sets the value of the input field at the start of the game to '0'
+	document.getElementById('rule_3').value = '0';
+};
