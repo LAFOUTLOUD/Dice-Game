@@ -5,6 +5,7 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:100,300,600" rel="stylesheet" type="text/css">
         <link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css">
         <link type="text/css" rel="stylesheet" href="style.css">
+        
         <title>Pig Game</title>
     </head>
 
@@ -33,10 +34,21 @@
             <button class="btn-hold"><i class="ion-ios-download-outline"></i>Hold</button>
             
             <img src="dice-5.png" alt="Dice" class="dice">
+			
+			<!-- adds a 2nd dice image to the HTML -->
+			<img src="dice-5.png" alt="Dice" class="dice_2">
+
         </div>
-        
-        <script src="app.js"></script> <!-- has to stay here and not in the <head> section -->
+
+		<div id="winning_score"> <!-- div controls the positioning -->
+			<input id="rule_3" placeholder="add Winning Score" type="number">
+		</div>
+		
+		<div id="winning_score_button"> <!-- div controls the positioning -->
+			<button class="btn-submit">Submit</button>
+		</div>
+
+        <script src="Coding_Challenges.js"></script>
     </body>
-    
 </html>
 
